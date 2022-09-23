@@ -10,28 +10,4 @@ spec:
     labelSelectors:
       'app': 'backend' 
   duration: '10s'
-  program: `#include "common.h"
-
-char __license[] SEC("license") = "Dual MIT/GPL";
-
-struct bpf_map_def SEC("maps") kprobe_map = {
-	.type        = BPF_MAP_TYPE_PERCPU_ARRAY,
-	.key_size    = sizeof(u32),
-	.value_size  = sizeof(u64),
-	.max_entries = 1,
-};
-
-SEC("kprobe/sys_execve")
-int kprobe_execve() {
-	u32 key     = 0;
-	u64 initval = 1, *valp;
-
-	valp = bpf_map_lookup_elem(&kprobe_map, &key);
-	if (!valp) {
-		bpf_map_update_elem(&kprobe_map, &key, &initval, BPF_ANY);
-		return 0;
-	}
-	__sync_fetch_and_add(valp, 1);
-
-	return 0;
-}`
+  program: "I2luY2x1ZGUgImNvbW1vbi5oIgoKY2hhciBfX2xpY2Vuc2VbXSBTRUMoImxpY2Vuc2UiKSA9ICJEdWFsIE1JVC9HUEwiOwoKc3RydWN0IGJwZl9tYXBfZGVmIFNFQygibWFwcyIpIGtwcm9iZV9tYXAgPSB7CgkudHlwZSAgICAgICAgPSBCUEZfTUFQX1RZUEVfUEVSQ1BVX0FSUkFZLAoJLmtleV9zaXplICAgID0gc2l6ZW9mKHUzMiksCgkudmFsdWVfc2l6ZSAgPSBzaXplb2YodTY0KSwKCS5tYXhfZW50cmllcyA9IDEsCn07CgpTRUMoImtwcm9iZS9zeXNfZXhlY3ZlIikKaW50IGtwcm9iZV9leGVjdmUoKSB7Cgl1MzIga2V5ICAgICA9IDA7Cgl1NjQgaW5pdHZhbCA9IDEsICp2YWxwOwoKCXZhbHAgPSBicGZfbWFwX2xvb2t1cF9lbGVtKCZrcHJvYmVfbWFwLCAma2V5KTsKCWlmICghdmFscCkgewoJCWJwZl9tYXBfdXBkYXRlX2VsZW0oJmtwcm9iZV9tYXAsICZrZXksICZpbml0dmFsLCBCUEZfQU5ZKTsKCQlyZXR1cm4gMDsKCX0KCV9fc3luY19mZXRjaF9hbmRfYWRkKHZhbHAsIDEpOwoKCXJldHVybiAwOwp9" # base64编码
