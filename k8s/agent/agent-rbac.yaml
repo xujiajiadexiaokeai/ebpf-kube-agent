@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: "ebpf-kube-agent"
+  name: ebpf-agent
+  labels:
+    app.kubernetes.io/name: ebpf-kube-agent
+    app.kubernetes.io/instance: ebpf-kube-agent
+    app.kubernetes.io/part-of: ebpf-kube-agent
+    app.kubernetes.io/version: 0.1
+    app.kubernetes.io/component: ebpf-agent

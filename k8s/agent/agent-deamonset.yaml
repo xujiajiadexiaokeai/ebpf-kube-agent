@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: "ebpf-kube-agent"
+  name: ebpf-agent
+  labels:
+    app.kubernetes.io/component: ebpf-agent
+    app.kubernetes.io/name: ebpf-kube-agent
+    app.kubernetes.io/instance: ebpf-kube-agent
+    app.kubernetes.io/part-of: ebpf-kube-agent
+    app.kubernetes.io/version: 0.1
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ebpf-kube-agent
+      app.kubernetes.io/instance: ebpf-kube-agent
+      app.kubernetes.io/component: ebpf-agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ebpf-kube-agent
+        app.kubernetes.io/instance: ebpf-kube-agent
+        app.kubernetes.io/part-of: ebpf-kube-agent
+        app.kubernetes.io/version: 0.1
+        app.kubernetes.io/component: ebpf-agent
+      annotations:
+    spec:
+      hostNetwork: true
+      hostPID: true
+      containers:
+        - name: ebpf-agent
+          image: ebpf-agent:0.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /agent
+            - --http-port
+            - !!str 2333
+          securityContext:
+            privileged: true
+          ports:
+            - name: http
+              containerPort: 2333
