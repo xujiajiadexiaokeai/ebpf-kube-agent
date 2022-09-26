@@ -7,6 +7,8 @@ RUN apt-get update && \
 
 RUN git clone https://github.com/cilium/ebpf.git
 
-COPY bin/agent /agent
+COPY /bin/ebpf-agent /ebpf-agent
 
-CMD [ "/bin/sh", "./agent" ]
+CMD [ "./ebpf-agent" ]
+
+

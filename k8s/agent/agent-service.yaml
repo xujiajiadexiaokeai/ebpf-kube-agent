@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: ebpf-kube-agent
     app.kubernetes.io/instance: ebpf-kube-agent
     app.kubernetes.io/part-of: ebpf-kube-agent
-    app.kubernetes.io/version: ${VERSION_TAG##v}
+    app.kubernetes.io/version: ebpf-kube-agent_v0.1
     app.kubernetes.io/component: ebpf-agent
 spec:
   clusterIP: None

@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/name: ebpf-kube-agent
     app.kubernetes.io/instance: ebpf-kube-agent
     app.kubernetes.io/part-of: ebpf-kube-agent
-    app.kubernetes.io/version: 0.1
+    app.kubernetes.io/version: ebpf-kube-agent_v0.1
 spec:
   selector:
     matchLabels:
@@ -21,7 +21,7 @@ spec:
         app.kubernetes.io/name: ebpf-kube-agent
         app.kubernetes.io/instance: ebpf-kube-agent
         app.kubernetes.io/part-of: ebpf-kube-agent
-        app.kubernetes.io/version: 0.1
+        app.kubernetes.io/version: ebpf-kube-agent_v0.1
         app.kubernetes.io/component: ebpf-agent
       annotations:
     spec:
@@ -32,7 +32,7 @@ spec:
           image: ebpf-agent:0.1
           imagePullPolicy: IfNotPresent
           command:
-            - /agent
+            - /ebpf-agent
             - --http-port
             - !!str 2333
           securityContext:
