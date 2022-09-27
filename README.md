@@ -1,5 +1,5 @@
 eBPF-Kube-Agent
-
+---
 # Overview
 ebpf-kube-agent是一个以DaemonSet形式在kubernetes集群下的Node中维持一个容器来执行上传的ebpf代码的工具.提供了一个manager,用来对agents进行管理、下发ebpf代码和回收结果.客户端通过CLI的形式与集群中的manager进行交互.
 
@@ -35,3 +35,35 @@ ebpf-kube-agent是一个以DaemonSet形式在kubernetes集群下的Node中维持
 | |- manager
 |- Makefile // 构建相关命令
 
+
+# Example
+```sh
+kubectl-ebpf run --namespace ebpf-kube-agent --pod ebpf-agent-h8h59 --program kprobe_percpu
+```
+![example](doc/images/run-example.jpg)
+## Requirements
+- docker
+- kind 
+  - create a multi-node clusters
+- make
+- gcc
+- git clone https://github.com/xujiajiadexiaokeai/ebpf-kube-agent.git
+
+## Steps
+```sh
+// 二进制构建
+1. cd ebpf-kube-agent
+2. make build
+
+// 镜像构建&部署
+3. docker build -f /bin/ebpf-agent -t ebpf-agent:0.1 .
+4. kind load docker-image ebpf-agent:0.1
+5. kubectl create namespace ebpf-kube-agent
+6. kubectl apply k8s/agent/agent-daemonset.yaml
+
+// 加入PATH
+7. cp /bin/kubectl-ebpf /usr/local/bin/
+
+// 执行
+8. kubectl-ebpf run --namespace ebpf-kube-agent --pod ebpf-agent-h8h59 --program kprobe_percpu
+```
