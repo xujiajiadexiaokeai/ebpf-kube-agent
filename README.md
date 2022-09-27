@@ -16,5 +16,22 @@ ebpf-kube-agent是一个以DaemonSet形式在kubernetes集群下的Node中维持
 - [X] 通过cli与pod进行交互
 - [ ] 建立manager,cli不再和pod交互,改为通过manager管理
 
+# 代码目录介绍
 
+|- bin // 可执行文件
+|- cmd // 命令行
+| |- agent // agent模块相关命令
+|- doc // 文档
+|- example 
+|- images // docker镜像文件
+| |- agent // agent模块相关镜像文件
+|- k8s // k8s部署文件
+| |- agent // agent模块相关部署文件
+|- pkg // 源代码
+| |- agent
+| |- cmd
+| |- ebpfjob // 暂时废弃
+| |- log
+| |- manager
+|- Makefile // 构建相关命令
 
