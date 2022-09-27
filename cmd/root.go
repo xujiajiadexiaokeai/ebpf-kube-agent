@@ -18,7 +18,7 @@ func main() {
 		ErrOut: os.Stderr,
 	}
 
-	root := cmd.NewRunCommand(streams)
+	root := cmd.NewRootCommand(streams)
 	if err := root.Execute(); err != nil {
 		os.Exit(1)
 	}

@@ -1,15 +1,18 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
-	"k8s.io/apimachinery/pkg/util/uuid"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"xujiajiadexiaokeai.github.com/ebpf-kube-agent/pkg/agent"
-	"xujiajiadexiaokeai.github.com/ebpf-kube-agent/pkg/ebpfjob"
+	"k8s.io/client-go/tools/remotecommand"
+	cmdutil "k8s.io/kubectl/pkg/cmd/util"
+	"k8s.io/kubectl/pkg/scheme"
 )
 
 var (
@@ -21,11 +24,10 @@ var (
 type RunOptions struct {
 	configFlags *genericclioptions.ConfigFlags
 	genericclioptions.IOStreams
-	namespace       string
-	targetNamespace string
-	pod             string
-	container       string
-	clientConfig    *rest.Config
+	namespace    string
+	pod          string
+	program      string
+	clientConfig *rest.Config
 }
 
 func NewRunOptions(streams genericclioptions.IOStreams) *RunOptions {
@@ -35,62 +37,77 @@ func NewRunOptions(streams genericclioptions.IOStreams) *RunOptions {
 	}
 }
 
-func NewRunCommand(streams genericclioptions.IOStreams) *cobra.Command {
+func NewRunCommand(factory cmdutil.Factory, streams genericclioptions.IOStreams) *cobra.Command {
 	o := NewRunOptions(streams)
 
 	cmd := &cobra.Command{
 		Use:   "run",
 		Short: runShort,
 		Long:  runLong,
-		PersistentPreRun: func(c *cobra.Command, args []string) {
-			c.SetOutput(streams.ErrOut)
-		},
-		Run: func(c *cobra.Command, args []string) {
-			cobra.NoArgs(c, args)
-			c.Help()
+		RunE: func(c *cobra.Command, args []string) error {
+			if err := o.Complete(factory); err != nil {
+				return err
+			}
+			if err := o.Run(); err != nil {
+				fmt.Fprintln(o.ErrOut, err.Error())
+				return nil
+			}
+			return nil
 		},
 	}
-
-	flags := cmd.PersistentFlags()
-	o.configFlags.AddFlags(flags)
-
-	// matchVersionFlags := cmdutil.NewMatchVersionFlags(o.configFlags)
-	// matchVersionFlags.AddFlags(flags)
-
-	// f := cmdutil.NewFactory(matchVersionFlags)
-
-	// cmd.AddCommand()
-
+	cmd.Flags().StringVar(&o.namespace, "namespace", o.namespace, "the namespace which the target pod exists")
+	cmd.Flags().StringVar(&o.pod, "pod", o.pod, "the pod which the program to execute")
+	cmd.Flags().StringVar(&o.program, "program", o.program, "program name")
 	return cmd
 
 }
+func (o *RunOptions) Complete(factory cmdutil.Factory) error {
+	var err error
+	o.clientConfig, err = factory.ToRESTConfig()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func (o *RunOptions) Run() error {
-	juid := uuid.NewUUID()
-
+	// juid := uuid.NewUUID()
+	podName := o.pod
+	namespace := o.namespace
+	program := o.program
+	cmdPrefix := "cd ebpf/examples && go run -exec sudo ./"
+	cmd := cmdPrefix + program
 	clientset, err := kubernetes.NewForConfig(o.clientConfig)
 	if err != nil {
-		return err
+		fmt.Println(err)
 	}
-
-	target, err := ebpfjob.GetJobTarget(clientset, o.pod, o.targetNamespace)
+	req := clientset.CoreV1().RESTClient().Post().
+		Resource("pods").
+		Name(podName).
+		Namespace(namespace).
+		SubResource("exec").
+		VersionedParams(&v1.PodExecOptions{
+			Command: []string{"sh", "-c", cmd},
+			Stdin:   true,
+			Stdout:  true,
+			Stderr:  true,
+			TTY:     true,
+		}, scheme.ParameterCodec)
+	executor, err := remotecommand.NewSPDYExecutor(o.clientConfig, "POST", req.URL())
 	if err != nil {
-		return err
+		fmt.Println(err)
 	}
-	jc := ebpfjob.NewJobClient(clientset, o.namespace)
-
-	ej := ebpfjob.EbpfJob{
-		ID: juid,
+	fmt.Println(fmt.Sprintf("pod: %s, namespace: %s, function name: %s", podName, namespace, program))
+	fmt.Println("program start")
+	var stderr bytes.Buffer
+	if err = executor.Stream(remotecommand.StreamOptions{
+		Stdin:  os.Stdin,
+		Stdout: os.Stdout,
+		Stderr: &stderr,
+		Tty:    true,
+	}); err != nil {
+		fmt.Println(err)
 	}
-
-	job, err := jc.CreateJob(ej)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(o.IOStreams.Out, "job %s created\n", ej.ID)
-
-	a := agent.NewAgent()
-
-	a.AttachJob(job)
+	return nil
 }

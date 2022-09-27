@@ -1,12 +1,13 @@
 
 agent ?= bin/agent
+kubectl-ebpf ?= bin/kubectl-ebpf 
 GO ?= go
 
-
-
-
 .PHONY: build
-build: clean ${agent}
+build: clean
+	$(GO) build -o ${agent} ./cmd/agent
+	$(GO) build -o ${kubectl-ebpf} ./cmd/root.go
 
-${agent}:
-	$(GO) build -o $@ ./cmd/agent
+.PHONY: clean
+clean: 
+	rm -rf bin

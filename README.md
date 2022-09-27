@@ -8,16 +8,13 @@ ebpf-kube-agent是一个以DaemonSet形式在kubernetes集群下的Node中维持
 
 `ebpf-kube-agent` 由三部分组成:
 * CLI客户端: 通过CLI和在Kubernetes中运行的`manager` 进行交互, 支持通过CRD来定义执行
-* Agent: 以DaemonSet的形式在通过`标签选择器`选中的pod上创建Job来执行
+* Agent: 以DaemonSet的形式在通过`标签选择器`选中的pod上执行
 * Manager: 管理agents,下发ebpf code到agent,回收执行结果
 
 # Plan
-1. 使用cilium/ebpf在Node上执行ebpf代码
-2. 通过cli与pod进行交互
-3. 建立manager,cli不再和pod交互,改为通过manager管理
-
-
-
+- [X] 使用cilium/ebpf在Node上执行ebpf代码
+- [X] 通过cli与pod进行交互
+- [ ] 建立manager,cli不再和pod交互,改为通过manager管理
 
 
 
