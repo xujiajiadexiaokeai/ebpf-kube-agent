@@ -1,19 +1,16 @@
 [WIP]eBPF-Kube-Agent
 ---
 # Overview
----
 
 `ebpf-kube-agent` 是一套利用[cilium/ebpf](https://github.com/cilium/ebpf)作为`ebpf program deployer`, 提供**快捷**、**高效**的在Kubernetes集群下的Node上部署ebpf program并获取data的**执行代理**.
 
 提供了一个`manager`, 用来管理`agents`、 下发ebpf program和回收data. `client`通过CLI的形式与集群中的`manager`进行交互.
 
 # Features
----
 
 
 
 # Design
----
 
 ![Design](doc/images/design2.png)
 
@@ -23,7 +20,6 @@
 * Manager: 管理agents,下发ebpf code到agent,回收执行结果
 
 # Road Map
----
 
 - [X] 使用cilium/ebpf在Node上执行ebpf代码
 - [X] 通过cli与pod进行交互
@@ -33,7 +29,6 @@
 - [ ] 使用grpc进行通信
 
 # Project Structure
----
 
 ```
 |- bin // 可执行文件
@@ -55,7 +50,6 @@
 ```
 
 # Example
----
 
 ```sh
 kubectl-ebpf run --namespace ebpf-kube-agent --pod ebpf-agent-h8h59 --program kprobe_percpu
@@ -63,7 +57,6 @@ kubectl-ebpf run --namespace ebpf-kube-agent --pod ebpf-agent-h8h59 --program kp
 ![example](doc/images/run-example.jpg)
 
 ## Requirements
----
 
 - docker
 - kind 
@@ -73,7 +66,6 @@ kubectl-ebpf run --namespace ebpf-kube-agent --pod ebpf-agent-h8h59 --program kp
 - git clone https://github.com/xujiajiadexiaokeai/ebpf-kube-agent.git
 
 ## Steps
----
 
 ```sh
 // 二进制构建
