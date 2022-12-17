@@ -3,9 +3,9 @@ package main
 import (
 	"os"
 
+	"github.com/ebpf-kube-agent/pkg/cmd"
 	"github.com/spf13/pflag"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"xujiajiadexiaokeai.github.com/ebpf-kube-agent/pkg/cmd"
 )
 
 func main() {

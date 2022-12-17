@@ -6,10 +6,10 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/ebpf-kube-agent/pkg/log"
 	"github.com/go-logr/logr"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
-	"xujiajiadexiaokeai.github.com/ebpf-kube-agent/pkg/log"
 )
 
 type Config struct {

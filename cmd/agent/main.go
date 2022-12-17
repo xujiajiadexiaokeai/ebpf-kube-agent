@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"xujiajiadexiaokeai.github.com/ebpf-kube-agent/pkg/agent"
-	"xujiajiadexiaokeai.github.com/ebpf-kube-agent/pkg/log"
+	"github.com/ebpf-kube-agent/pkg/agent"
+	"github.com/ebpf-kube-agent/pkg/log"
 )
 
 var (

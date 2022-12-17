@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"fmt"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
@@ -34,24 +34,26 @@ func NewGenerateOptions(streams genericclioptions.IOStreams) *GenerateOptions {
 func NewGenerateCommand(factory cmdutil.Factory, streams genericclioptions.IOStreams) *cobra.Command {
 	o := NewGenerateOptions(streams)
 
-	cmd := &cobra.Command{
-		Use:   "gen",
-		Short: generateShort,
-		Long:  generateLong,
-		RunE: func(c *cobra.Command, args []string) error {
-			if err := o.Complete(factory); err != nil {
-				return err
-			}
-			if err := o.Run(); err != nil {
-				fmt.Fprintln(o.ErrOut, err.Error())
-				return nil
-			}
-			return nil
-		},
-	}
-	cmd.Flags().StringVar(&o.namespace, "namespace", o.namespace, "the namespace which the target pod exists")
-	cmd.Flags().StringVar(&o.program, "program", o.program, "program name")
-	return cmd
+	cmd := exec.Command("prog")
+
+	// cmd := &cobra.Command{
+	// 	Use:   "gen",
+	// 	Short: generateShort,
+	// 	Long:  generateLong,
+	// 	RunE: func(c *cobra.Command, args []string) error {
+	// 		if err := o.Complete(factory); err != nil {
+	// 			return err
+	// 		}
+	// 		if err := o.Run(); err != nil {
+	// 			fmt.Fprintln(o.ErrOut, err.Error())
+	// 			return nil
+	// 		}
+	// 		return nil
+	// 	},
+	// }
+	// cmd.Flags().StringVar(&o.namespace, "namespace", o.namespace, "the namespace which the target pod exists")
+	// cmd.Flags().StringVar(&o.program, "program", o.program, "program name")
+	// return cmd
 
 }
 func (o *GenerateOptions) Complete(factory cmdutil.Factory) error {
