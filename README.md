@@ -4,7 +4,7 @@
 `ebpf-kube-agent` is a tool that uses [cilium/ebpf](https://github.com/cilium/ebpf) as an ebpf program deployer to deploy ebpf programs on Kubernetes nodes and collect data.
 
 # Features
-- [x] Support deploying ebpf programs on Kubernetes nodes
+- [X] Support deploying ebpf programs on Kubernetes nodes
 - [ ] Support collecting data from ebpf maps
 - [ ] Support sending data to Prometheus
 - [ ] Support customizing ebpf programs and maps
@@ -22,8 +22,11 @@ The agent is deployed as a DaemonSet on each node. It is responsible for loading
 
 ## Prerequisites
 A Kubernetes cluster with version >= 1.18
+
 Linux kernel version >= 5.4 with BTF enabled
+
 Go version >= 1.16
+
 clang/llvm version >= 11
 
 ## Installation
