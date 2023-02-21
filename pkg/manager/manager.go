@@ -32,4 +32,19 @@ func newGrpcServer(tlsConf tlsConfig, log *log.Logger) (*grpc.Server, error) {
 
 type Manager struct {
 	grpcServer *grpc.Server
+	provider   *Provider
+}
+
+func (m *Manager) NewManager() (*Manager, error) {
+	provider, err := getKubernetesProvider()
+	if err != nil {
+		return nil, err
+	}
+	return &Manager{
+		provider: provider,
+	}, nil
+}
+
+func getKubernetesProvider() (*Provider, error) {
+	return nil, nil
 }
