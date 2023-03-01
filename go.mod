@@ -1,4 +1,4 @@
-module github.com/ebpf-kube-agent
+module github.com/xujiajiadexiaokeai/ebpf-kube-agent
 
 go 1.18
 

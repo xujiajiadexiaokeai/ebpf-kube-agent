@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/ebpf-kube-agent/pkg/cmd"
 	"github.com/spf13/pflag"
+	"github.com/xujiajiadexiaokeai/ebpf-kube-agent/pkg/cmd"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 )
 
