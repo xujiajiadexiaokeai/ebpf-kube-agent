@@ -15,7 +15,7 @@ var (
 )
 
 func init() {
-	flag.IntVar(&conf.GrpcPort, "gprc-port", 0, "gprc port")
+	flag.IntVar(&conf.GrpcPort, "gprc-port", 3311, "gprc port")
 
 	flag.Parse()
 }
@@ -37,6 +37,15 @@ func main() {
 		syscall.SIGINT,
 		syscall.SIGTERM,
 	)
+
+	select {
+	case sig := <-sigc:
+		logger.Info("received signal: ", "signal", sig)
+	case err = <-errs:
+		if err != nil {
+			logger.Error(err, "ebpf-kube-manager")
+		}
+	}
 	if err = manager.Stop(); err != nil {
 		logger.Error(err, "manager stop")
 	}

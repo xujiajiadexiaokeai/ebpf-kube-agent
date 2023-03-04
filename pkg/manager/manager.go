@@ -9,11 +9,8 @@ import (
 	"github.com/xujiajiadexiaokeai/ebpf-kube-agent/pkg/manager/pb"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
-
-type Server struct {
-	pb.UnimplementedManagerServer
-}
 
 // Config contains the basic manager configuration
 type Config struct {
@@ -50,7 +47,8 @@ func newDaemonServer() (*DaemonServer, error) {
 
 func newGrpcServer(tlsConf tlsConfig) (*grpc.Server, error) {
 	s := grpc.NewServer()
-	pb.RegisterManagerServer(s, &Server{})
+	pb.RegisterManagerServer(s, &server{})
+	reflection.Register(s)
 	return s, nil
 }
 
@@ -78,7 +76,7 @@ func BuildManager(conf *Config, log log.Logger) (*Manager, error) {
 func (m *Manager) Start() error {
 	m.logger.Info("starting manager")
 	grpcBindAddr := m.conf.GprcAddr()
-	m.logger.Info("starting grpc server on", grpcBindAddr)
+	m.logger.Info("starting grpc server on ", grpcBindAddr)
 	grpcLintener, err := net.Listen("tcp", grpcBindAddr)
 	if err != nil {
 		return errors.Wrap(err, "failed to listen on grpc bind address")
