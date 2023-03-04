@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: ebpf-kube-agent
+  name: ebpf-manager
+  labels:
+    app.kubernetes.io/component: ebpf-manager
+    app.kubernetes.io/name: ebpf-kube-agent
+    app.kubernetes.io/instance: ebpf-kube-agent
+    app.kubernetes.io/part-of: ebpf-kube-agent
+    app.kubernetes.io/version: ebpf-kube-agent_v0.1
+spec:
+  selector:
+    app.kubernetes.io/name: ebpf-kube-agent
+    app.kubernetes.io/instance: ebpf-kube-agent
+    app.kubernetes.io/component: ebpf-manager
+  ports:
+  - port: 3311
+    targetPort: 3311
