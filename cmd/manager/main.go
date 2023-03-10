@@ -15,7 +15,7 @@ var (
 )
 
 func init() {
-	flag.IntVar(&conf.GrpcPort, "gprc-port", 3311, "gprc port")
+	flag.IntVar(&conf.GrpcPort, "grpc-port", 3311, "grpc port")
 
 	flag.Parse()
 }
