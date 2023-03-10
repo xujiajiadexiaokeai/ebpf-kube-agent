@@ -1,10 +1,10 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
-  namespace: "ebpf-kube-agent"
-  name: ebpf-agent
+  namespace: ebpf-kube-agent
+  name: ebpf-manager
   labels:
-    app.kubernetes.io/component: ebpf-agent
+    app.kubernetes.io/component: ebpf-manager
     app.kubernetes.io/name: ebpf-kube-agent
     app.kubernetes.io/instance: ebpf-kube-agent
     app.kubernetes.io/part-of: ebpf-kube-agent
@@ -14,7 +14,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: ebpf-kube-agent
       app.kubernetes.io/instance: ebpf-kube-agent
-      app.kubernetes.io/component: ebpf-agent
+      app.kubernetes.io/component: ebpf-manager
   template:
     metadata:
       labels:
@@ -22,20 +22,21 @@ spec:
         app.kubernetes.io/instance: ebpf-kube-agent
         app.kubernetes.io/part-of: ebpf-kube-agent
         app.kubernetes.io/version: ebpf-kube-agent_v0.1
-        app.kubernetes.io/component: ebpf-agent
+        app.kubernetes.io/component: ebpf-manager
     spec:
       hostNetwork: true
       hostPID: true
       containers:
-        - name: ebpf-agent
-          image: ebpf-agent:0.1
-          imagePullPolicy: IfNotPresent
-          command:
-            - /ebpf-agent
-            - --http-port
-            - !!str 2333
-          securityContext:
-            privileged: true
-          ports:
-            - name: http
-              containerPort: 2333
+      - name: ebpf-manager
+        image: ebpf-manager:0.1
+        imagePullPolicy: IfNotPresent
+        command:
+          - /ebpf-manager
+          - --grpc-port
+          - !!str 3311
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3311
