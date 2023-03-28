@@ -23,3 +23,15 @@ message KubernetesVersionRequest {
 message KubernetesVersionReply {
     string version = 1;
 }
+
+message Pod {
+    string name = 1;
+    string namespace = 2;
+}
+message ListPodRequest {
+    string namespace = 1;
+}
+
+message ListPodResponse {
+    repeated Pod pod_list = 1;
+}
