@@ -28,3 +28,7 @@ deploy-manager:
 .PHONY: clean
 clean: 
 	rm -rf bin
+
+.PHONY: generate-grpc-code
+generate-grpc-code:
+	cd pkg/manager && protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative pb/manager.proto

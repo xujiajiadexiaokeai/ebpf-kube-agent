@@ -3,6 +3,7 @@ package manager
 import (
 	"fmt"
 	"net"
+	"path/filepath"
 
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -10,6 +11,7 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"k8s.io/client-go/util/homedir"
 )
 
 // Config contains the basic manager configuration
@@ -33,6 +35,7 @@ func (c *Config) GprcAddr() string {
 
 type DaemonServer struct {
 	provider *Provider
+	pb.UnimplementedManagerServer
 }
 
 func newDaemonServer() (*DaemonServer, error) {
@@ -45,9 +48,9 @@ func newDaemonServer() (*DaemonServer, error) {
 	}, nil
 }
 
-func newGrpcServer(tlsConf tlsConfig) (*grpc.Server, error) {
+func newGrpcServer(daemonServer *DaemonServer, tlsConf tlsConfig) (*grpc.Server, error) {
 	s := grpc.NewServer()
-	pb.RegisterManagerServer(s, &server{})
+	pb.RegisterManagerServer(s, daemonServer)
 	reflection.Register(s)
 	return s, nil
 }
@@ -62,13 +65,13 @@ type Manager struct {
 func BuildManager(conf *Config, log log.Logger) (*Manager, error) {
 	manager := &Manager{conf: conf, logger: log}
 	var err error
-	manager.grpcServer, err = newGrpcServer(manager.conf.tlsConfig)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create grpc server")
-	}
 	manager.daemonServer, err = newDaemonServer()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create daemon server")
+	}
+	manager.grpcServer, err = newGrpcServer(manager.daemonServer, manager.conf.tlsConfig)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create grpc server")
 	}
 	return manager, nil
 }
@@ -98,5 +101,11 @@ func (m *Manager) Stop() error {
 }
 
 func getKubernetesProvider() (*Provider, error) {
-	return nil, nil
+	kubeConfigPath := filepath.Join(homedir.HomeDir(), ".kube", "config")
+	kubeContext := "kind-kind"
+	kubernetesProvider, err := NewProvider(kubeConfigPath, kubeContext)
+	if err != nil {
+		return nil, err
+	}
+	return kubernetesProvider, nil
 }

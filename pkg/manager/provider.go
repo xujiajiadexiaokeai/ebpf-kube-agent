@@ -92,6 +92,14 @@ func (provider *Provider) ListAllNamespaces(ctx context.Context) ([]core.Namespa
 	return namespaces.Items, err
 }
 
+func (provider *Provider) ListPod(ctx context.Context, namespace string) ([]core.Pod, error) {
+	pods, err := provider.clientSet.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return pods.Items, err
+}
+
 func (provider *Provider) GetKubernetesVersion() (string, error) {
 	serverVersion, err := provider.clientSet.ServerVersion()
 	if err != nil {
