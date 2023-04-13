@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
 	cm "github.com/xujiajiadexiaokeai/ebpf-kube-agent/pkg/ekctl/common"
+	"github.com/xujiajiadexiaokeai/ebpf-kube-agent/pkg/manager/pb"
 )
 
 func NewListCommand() *cobra.Command {
@@ -26,6 +28,7 @@ func NewListPodCommand() *cobra.Command {
 		Long:  "List all pods in the Kubernetes cluster",
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Listing all pods...")
+			runListPod(namespace)
 		},
 	}
 	cmd.Flags().StringVar(&namespace, "namespace", "", "Specify the namespace to list pods from")
@@ -33,13 +36,21 @@ func NewListPodCommand() *cobra.Command {
 	return cmd
 }
 
-func runListPod() {
+func runListPod(namespace string) {
 	client, err := cm.NewGRPClient()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	//TODO
+	defer client.Close()
+	resp, err := client.ListPod(context.Background(), &pb.ListPodRequest{Namespace: namespace})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, pod := range resp.PodList {
+		fmt.Printf("Pod: %s, Namespace: %s", pod.Name, pod.Namespace)
+	}
 }
 
 func NewListProgCommand() *cobra.Command {

@@ -1,14 +1,14 @@
 
 agent ?= bin/ebpf-agent
 manager ?= bin/ebpf-manager
-kubectl-ebpf ?= bin/kubectl-ebpf 
+ekctl ?= bin/ekctl
 GO ?= go
 
 .PHONY: build
 build: clean
 	$(GO) build -o ${agent} ./cmd/agent
 	$(GO) build -o ${manager} ./cmd/manager
-	$(GO) build -o ${kubectl-ebpf} ./cmd/root.go
+	$(GO) build -o ${ekctl} ./cmd/root.go
 
 .PHONY: image-build
 image-build:
